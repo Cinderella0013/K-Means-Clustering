@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ทดสอบระดับความเครียด</title>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      /* สีกลุ่ม */
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: all 0.2s ease-in-out;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at top right, #eef2ff, transparent), radial-gradient(circle at bottom left, #f0f9ff, transparent);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: min(760px, 100%);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+
+      /* สีพื้นหลังแบบ Gradient */
+      background: linear-gradient(to right, #4f46e5, #9333ea);
+
+      /* เพิ่มความเข้ากันได้ของเบราว์เซอร์ (Compatibility) */
+      -webkit-background-clip: text;
+      /* สำหรับ Chrome, Safari, Edge */
+      background-clip: text;
+      /* Standard Property */
+
+      /* ทำให้สีตัวอักษรโปร่งใสเพื่อโชว์ Gradient ด้านหลัง */
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      /* fallback สำหรับบางเบราว์เซอร์ */
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      background: #f1f5f9;
+      border-radius: 10px;
+      margin-bottom: 35px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, #4f46e5, #06b6d4);
+      border-radius: 10px;
+    }
+
+    /* Steps Animation */
+    .step {
+      display: none;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #334155;
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media(max-width:600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      background-color: #f8fafc;
+      cursor: pointer;
+    }
+
+    select:hover {
+      border-color: #cbd5e1;
+      background-color: #fff;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      background-color: #fff;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    /* Result Page */
+    .resultCard {
+      text-align: center;
+    }
+
+    .resultCard h3 {
+      color: var(--primary) !important;
+      border-left: none;
+      /* เอาเส้นขีดข้างหน้าออก */
+      margin-top: 0;
+      font-size: 32px;
+    }
+
+    .bigResult {
+      font-size: 24px;
+      font-weight: 900;
+      margin: 20px 0;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .descText {
+      font-size: 17px;
+      color: #334155;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      padding: 25px;
+      background: #fdfdfd;
+      border: 1px solid #f1f5f9;
+      border-radius: 20px;
+      text-align: left;
+
+      text-align: justify;
+      text-justify: inter-word;
+
+      position: relative;
+    }
+
+    .descText::before {
+      content: "“";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 40px;
+      color: #e2e8f0;
+      font-family: serif;
+    }
+
+    .summary-box {
+      text-align: left;
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-box b {
+      color: var(--primary);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .summary-box ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media(max-width:500px) {
+      .summary-box ul {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-box li {
+      font-size: 13px;
+      color: #64748b;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #f1f5f9;
+    }
+
+    /* Cluster Colors */
+    .color-0 {
+      color: var(--green) !important;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .color-1 {
+      color: var(--red) !important;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .color-2 {
+      color: var(--orange) !important;
+      background: rgba(245, 158, 11, 0.1);
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="container">
+      <div class="card" id="mainCard">
+        <h2>ทดสอบระดับความเครียด</h2>
+        <div class="subtitle">ลองมาเช็กกันหน่อยว่าไลฟ์สไตล์ช่วงนี้ สุขภาพจิตคุณอยู่เบอร์ไหน?</div>
+
+        <div class="progress-container">
+          <div class="progress-bar" id="progressBar" style="width: 33%;"></div>
+        </div>
+
+        <div class="step active" id="step1">
+          <h3>ส่วนที่ 1: ทำความรู้จักกันหน่อย</h3>
+          <div class="grid">
+            <div><label>เพศสภาพ</label><select id="gender">
+                <option value="ชาย">ชาย</option>
+                <option value="หญิง">หญิง</option>
+                <option value="เพศทางเลือก (LGBTQ+)">เพศทางเลือก (LGBTQ+)</option>
+                <option value="ไม่ต้องการระบุ">ไม่ต้องการระบุ</option>
+              </select></div>
+            <div><label>อายุ</label><select id="age">
+                <option value="ต่ำกว่า 18 ปี">ต่ำกว่า 18 ปี</option>
+                <option value="18-22 ปี">18-22 ปี</option>
+                <option value="23-30 ปี">23-30 ปี</option>
+              </select></div>
+            <div><label>สถานภาพ</label><select id="status">
+                <option value="โสด">โสด</option>
+                <option value="มีคนคุย / มีแฟนแล้ว">มีคนคุย / มีแฟนแล้ว</option>
+                <option value="สมรส">สมรส</option>
+              </select></div>
+            <div><label>ชั้นปี</label><select id="year">
+                <option value="ปี 1">ปี 1</option>
+                <option value="ปี 2">ปี 2</option>
+                <option value="ปี 3">ปี 3</option>
+                <option value="ปี 4">ปี 4</option>
+                <option value="สูงกว่าปี 4">สูงกว่าปี 4</option>
+              </select></div>
+            <div><label>กลุ่มสาขาวิชา</label><select id="faculty">
+                <option
+                  value="กลุ่มวิทยาศาสตร์สุขภาพ (แพทยศาสตร์,ทันตแพทยศาสตร์,พยาบาลศาสตร์,เภสัชศาสตร์,เทคนิคการแพทย์,สาธารณสุขศาสตร์,สัตวแพทยศาสตร์)">
+                  วิทยาศาสตร์สุขภาพ</option>
+                <option
+                  value="กลุ่มวิทยาศาสตร์และเทคโนโลยี (วิศวกรรมศาสตร์,วิทยาศาสตร์,เกษตรศาสตร์,สถาปัตยกรรมศาสตร์,เทคโนโลยี,วิทยาลัยการคอมพิวเตอร์)">
+                  วิทยาศาสตร์และเทคโนโลยี</option>
+                <option
+                  value="กลุ่มมนุษยศาสตร์และสังคมศาสตร์ (มนุษยศาสตร์และสังคมศาสตร์,นิติศาสตร์,บริหารธุรกิจและการบัญชี (KKBS),เศรษฐศาสตร์,ศึกษาศาสตร์,ศิลปกรรมศาสตร์, วิทยาลัยการปกครองท้องถิ่น (COLA), วิทยาลัยนานาชาติ (KKUIC),วิทยาลัยบัณฑิตศึกษาการจัดการ (MBA),คณะสหวิทยาการ (วิทยาเขตหนองคาย))">
+                  มนุษยศาสตร์และสังคมศาสตร์</option>
+              </select></div>
+            <div><label>เกรดเฉลี่ยสะสม (GPAX)</label><select id="gpax">
+                <option value="3.60 - 4.00">3.60 - 4.00</option>
+                <option value="3.25 - 3.59">3.25 - 3.59</option>
+                <option value="2.75 - 3.24">2.75 - 3.24</option>
+                <option value="2.00 - 2.74">2.00 - 2.74</option>
+                <option value="ต่ำกว่า 2.00">ต่ำกว่า 2.00</option>
+              </select></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn-primary" onclick="nextStep(2)">ถัดไป</button>
+          </div>
+        </div>
+
+        <div class="step" id="step2">
+          <h3>ส่วนที่ 2: ไลฟ์สไตล์และความสัมพันธ์ช่วงนี้</h3>
+          <div class="grid">
+            <div><label>การเงินรายเดือน พอใช้ไหม?</label><select id="income">
+                <option value="เพียงพอและมีเงินเหลือเก็บสบาย ๆ">เพียงพอ มีเงินเหลือชิลๆ</option>
+                <option value="พอใช้แบบเดือนชนเดือน (ไม่มีเงินเก็บ)">พอใช้เดือนชนเดือน</option>
+                <option value="ไม่ค่อยพอใช้ (ต้องประหยัดมาก หรือมีหนี้สิน)">ฝืดเคือง ต้องประหยัดมาก</option>
+              </select></div>
+            <div><label>เวลานอนเฉลี่ย/วัน</label><select id="sleep">
+                <option value="7 - 8 ชั่วโมง">7 - 8 ชั่วโมง (กำลังดี)</option>
+                <option value="5 - 6 ชั่วโมง">5 - 6 ชั่วโมง</option>
+                <option value="น้อยกว่า 5 ชั่วโมง">น้อยกว่า 5 ชั่วโมง (นอนน้อย)</option>
+                <option value="มากกว่า 8 ชั่วโมง">มากกว่า 8 ชั่วโมง (นอนเยอะ)</option>
+              </select></div>
+            <div><label>เวลาอ่านหนังสือ/ปั่นงาน</label><select id="reading">
+                <option value="1 - 3 ชั่วโมง">1 - 3 ชั่วโมง</option>
+                <option value="4 - 6 ชั่วโมง">4 - 6 ชั่วโมง</option>
+                <option value="น้อยกว่า 1 ชั่วโมง">น้อยกว่า 1 ชั่วโมง</option>
+                <option value="มากกว่า 6 ชั่วโมง">มากกว่า 6 ชั่วโมง</option>
+              </select></div>
+            <div><label>เวลาเล่นโซเชียล/ซีรีส์/เกม</label><select id="social">
+                <option value="2 - 4 ชั่วโมง">2 - 4 ชั่วโมง</option>
+                <option value="5 - 7 ชั่วโมง">5 - 7 ชั่วโมง</option>
+                <option value="น้อยกว่า 2 ชั่วโมง">น้อยกว่า 2 ชั่วโมง</option>
+                <option value="มากกว่า 7 ชั่วโมง">มากกว่า 7 ชั่วโมง</option>
+              </select></div>
+            <div><label>ดื่มคาเฟอีน (กาแฟ/ชา/ชูกำลัง)?</label><select id="caffeine">
+                <option value="ดื่มวันละ 2 แก้ว/ขวด ขึ้นไป">2 แก้วขึ้นไป/วัน</option>
+                <option value="ดื่มวันละ 1 แก้ว/ขวด">1 แก้ว/วัน</option>
+                <option value="ไม่ดื่มเลย หรือดื่มนาน ๆ ครั้ง">ไม่ดื่ม หรือนานๆ ที</option>
+              </select></div>
+            <div><label>ออกกำลังกายบ้างไหม?</label><select id="exercise">
+                <option value="3 วันขึ้นไป ต่อสัปดาห์">3 วันขึ้นไป/สัปดาห์</option>
+                <option value="1 - 2 วัน ต่อสัปดาห์">1 - 2 วัน/สัปดาห์</option>
+                <option value="ไม่ออกกำลังกายเลย หรือแทบไม่ได้ออก">ไม่ออกเลย / แทบไม่ได้ออก</option>
+              </select></div>
+            <div><label>ความถี่ในการปาร์ตี้/ดื่มแอลกอฮอล์?</label><select id="alcohol">
+                <option value="ไม่ดื่มเลย">ไม่ดื่มเลย</option>
+                <option value="นาน ๆ ครั้ง (เฉพาะช่วงเทศกาล / หลังสอบเสร็จ)">นานๆ ครั้ง (ตามเทศกาล)</option>
+                <option value="1 - 2 วัน ต่อสัปดาห์ (สายชิลวันหยุด)">1-2 วัน/สัปดาห์ (สายชิล)</option>
+                <option value="3 วันขึ้นไป ต่อสัปดาห์ (สายปาร์ตี้ตัวยง)">3 วันขึ้นไป/สัปดาห์ (สายปาร์ตี้)</option>
+              </select></div>
+            <div><label>ความสัมพันธ์ช่วงนี้ มีปัญหากับใครไหม?</label><select id="relation">
+                <option value="ราบรื่นดี ปกติสุข (ไม่มีปัญหาความสัมพันธ์)">ราบรื่นดี ปกติสุข</option>
+                <option value='มีความขัดแย้ง หรือมีปัญหากับ "เพื่อน / เพื่อนร่วมงานกลุ่ม" '>มีปัญหากับเพื่อน</option>
+                <option value='มีความขัดแย้ง หรือมีปัญหากับ "แฟน / คนรัก" '>มีปัญหากับแฟน</option>
+                <option value='มีความขัดแย้ง หรือมีปัญหากับ "ครอบครัว"'>มีปัญหากับครอบครัว</option>
+              </select></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn-secondary" onclick="nextStep(1)">ย้อนกลับ</button>
+            <button class="btn-primary" onclick="nextStep(3)">ถัดไป</button>
+          </div>
+        </div>
+
+        <div class="step" id="step3">
+          <h3>ส่วนที่ 3: เช็กใจตัวเองหน่อย (ช่วงเดือนที่ผ่านมา)</h3>
+          <div class="grid">
+            <div><label>ปัญหาการนอน (หลับยาก/ตื่นกลางดึก/เพลีย)</label><select id="st_sleep">
+                <option value="แทบไม่มี">แทบไม่มี</option>
+                <option value="เป็นบางครั้ง">เป็นบางครั้ง</option>
+                <option value="บ่อยครั้ง">บ่อยครั้ง</option>
+                <option value="เป็นประจำ">เป็นประจำ</option>
+              </select></div>
+            <div><label>สมาธิน้อยลง (เหม่อลอย/อ่านไม่เข้าหัว)</label><select id="st_focus">
+                <option value="แทบไม่มี">แทบไม่มี</option>
+                <option value="เป็นบางครั้ง">เป็นบางครั้ง</option>
+                <option value="บ่อยครั้ง">บ่อยครั้ง</option>
+                <option value="เป็นประจำ">เป็นประจำ</option>
+              </select></div>
+            <div><label>หงุดหงิด ว้าวุ่นใจง่าย</label><select id="st_irritable">
+                <option value="แทบไม่มี">แทบไม่มี</option>
+                <option value="เป็นบางครั้ง">เป็นบางครั้ง</option>
+                <option value="บ่อยครั้ง">บ่อยครั้ง</option>
+                <option value="เป็นประจำ">เป็นประจำ</option>
+              </select></div>
+            <div><label>รู้สึกเบื่อ เซ็ง หมดไฟ</label><select id="st_bored">
+                <option value="แทบไม่มี">แทบไม่มี</option>
+                <option value="เป็นบางครั้ง">เป็นบางครั้ง</option>
+                <option value="บ่อยครั้ง">บ่อยครั้ง</option>
+                <option value="เป็นประจำ">เป็นประจำ</option>
+              </select></div>
+            <div><label>ไม่อยากพบปะผู้คน เก็บตัว</label><select id="st_social">
+                <option value="แทบไม่มี">แทบไม่มี</option>
+                <option value="เป็นบางครั้ง">เป็นบางครั้ง</option>
+                <option value="บ่อยครั้ง">บ่อยครั้ง</option>
+                <option value="เป็นประจำ">เป็นประจำ</option>
+              </select></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn-secondary" onclick="nextStep(2)">ย้อนกลับ</button>
+            <button class="btn-primary" id="btnAnalyze">วิเคราะห์ผลลัพธ์</button>
+          </div>
+        </div>
+
+        <div class="step resultCard" id="step4">
+          <h3 style="color:var(--muted)">ผลการวิเคราะห์</h3>
+          <div id="groupName" class="bigResult">-</div>
+          <div id="groupDesc" class="descText">-</div>
+
+          <div class="summary-box">
+            <b>สรุปข้อมูลที่คุณประเมิน:</b>
+            <ul id="summaryList"></ul>
+          </div>
+
+          <button class="btn-secondary" onclick="location.reload()"
+            style="margin-top: 25px; width: 100%;">เริ่มทำใหม่</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    // ฟังก์ชันเปลี่ยนหน้า
+    function nextStep(step) {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      $(`step${step}`).classList.add('active');
+
+      // อัปเดต Progress Bar
+      const progress = step === 1 ? 33 : step === 2 ? 66 : step === 3 ? 100 : 100;
+      $('progressBar').style.width = `${progress}%`;
+
+      if (step === 4) {
+        // ซ่อน Progress Bar
+        $('progressBar').parentElement.style.display = 'none';
+        // ซ่อนหัวข้อ "ทดสอบระดับความเครียด"
+        document.querySelector('#mainCard h2').style.display = 'none';
+        // ซ่อนคำเกริ่น "ลองมาเช็กกันหน่อย..."
+        document.querySelector('#mainCard .subtitle').style.display = 'none';
+      } else {
+        // กรณีที่คนกดเริ่มใหม่หรือย้อนกลับ (เผื่อไว้) ให้มันกลับมาโชว์
+        $('progressBar').parentElement.style.display = 'block';
+        document.querySelector('#mainCard h2').style.display = 'block';
+        document.querySelector('#mainCard .subtitle').style.display = 'block';
+      }
+    }
+
+    // ข้อมูล Persona สำหรับอธิบายผลลัพธ์
+    const personas = {
+      0: {
+        title: "🔴 Cluster 0: กลุ่มแบกรับความตึงเครียดสะสม 🔴",
+        colorClass: "color-1",
+        desc: "คุณกำลังเผชิญกับภาวะเหนื่อยล้าทางอารมณ์ในระดับสูง ข้อมูลชี้ชัดว่าคุณมีคะแนนความเบื่อหน่ายและหมดไฟพุ่งสูงที่สุด ควบคู่กับสมาธิที่ลดลงอย่างมาก แม้ชั่วโมงนอนจะดูปกติแต่คุณภาพการนอนกลับแย่ที่สุด จนทำให้คุณรู้สึกหงุดหงิดง่ายและอยากปลีกตัวออกจากสังคม ช่วงนี้ร่างกายและจิตใจส่งสัญญาณเตือนว่า 'ไม่ไหวแล้ว' ลองหยุดพักจากงานตรงหน้า ลดการกดดันตัวเอง และหาโอกาสระบายความรู้สึกกับคนที่ไว้ใจเพื่อเติมพลังงานที่ว่างเปล่าให้กลับมาอีกครั้งนะครับ"
+      },
+      1: {
+        title: " 🟢 Cluster 1: กลุ่มรักษาสมดุลและจัดการตนเองได้ดี 🟢",
+        colorClass: "color-0",
+        desc: "ยอดเยี่ยมมากครับ! คุณคือกลุ่มที่มีวินัยและจัดการชีวิตได้ดีเยี่ยมที่สุด ข้อมูลสะท้อนว่าคุณทุ่มเทให้กับการเรียนและการทำงานสูงที่สุด แต่ยังสามารถรักษาสมดุลโดยการนอนหลับพักผ่อนได้เพียงพอและมีสุขภาพจิตที่มั่นคง คุณเลือกที่จะลดเวลาบนโซเชียลมีเดียเพื่อรักษาโฟกัส ทำให้แทบไม่มีปัญหาเรื่องสมาธิหรือความหงุดหงิดรบกวนใจเลย พลังงานในการจัดการตัวเองของคุณยอดเยี่ยมมาก ขอให้รักษาจังหวะชีวิตที่ 'Productive แบบไม่เสียสุขภาพจิต' นี้ไว้ต่อไปนะครับ"
+      },
+      2: {
+        title: "🟡 Cluster 2: กลุ่มสายชิลล์แต่แอบวอกแวก 🟡",
+        colorClass: "color-2",
+        desc: "คุณคือสายกิจกรรมและความบันเทิงตัวจริง! ข้อมูลพบว่าคุณใช้เวลาไปกับโซเชียลมีเดียและซีรีส์สูงที่สุดจนเบียดบังเวลานอน ทำให้คุณเป็นกลุ่มที่นอนน้อยที่สุด แต่ไม่ค่อยมีความกังวลใจ แม้คุณจะดูชิลล์และอารมณ์ดี แต่ความเพลิดเพลินที่มากเกินไปเริ่มส่งผลให้สมาธิในการเรียนลดลงและเกิดความรู้สึกเบื่อหน่ายในภาระหน้าที่หลักได้ ลองตั้งเวลาจำกัดการใช้หน้าจอลงสักนิด เพื่อดึงโฟกัสกลับมาสู่การเรียนให้มากขึ้น ก่อนที่ความเฉื่อยชาจะสะสมกลายเป็นความหมดไฟในระยะยาวนะครับ"
+      }
+    };
+
+    $("btnAnalyze").addEventListener("click", async () => {
+      const btn = $("btnAnalyze");
+      btn.textContent = "กำลังประมวลผล...";
+      btn.disabled = true;
+
+      const fields = [
+        "gender", "age", "status", "year", "faculty", "gpax",
+        "sleep", "reading", "social", "exercise", "income",
+        "caffeine", "alcohol", "relation",
+        "st_sleep", "st_focus", "st_irritable", "st_bored", "st_social"
+      ];
+
+      const payload = {};
+      fields.forEach(f => payload[f] = $(f).value);
+
+      try {
+        // สมมติส่งไปที่ API (ใช้โค้ดเดิมของคุณ)
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Server error");
+
+        // เตรียมหน้าผลลัพธ์
+        const clusterId = data.y_pred; // สมมติว่าคืนค่าเป็น 0, 1 หรือ 2
+        const persona = personas[clusterId];
+
+        $("groupName").textContent = persona.title;
+        $("groupName").className = `bigResult ${persona.colorClass}`;
+
+
+        $("groupDesc").innerHTML = `
+          ${persona.desc}
+          <hr style="border:0; border-top:1px solid #e2e8f0; margin:20px 0;">
+          <p style="font-size:13px; color:#94a3b8; font-weight:normal; text-align:left; margin:0;">
+            <b> หมายเหตุ:</b> คำอธิบายข้างต้นเป็นการประเมินเบื้องต้น โดยอิงจากการจัดกลุ่มข้อมูล (Clustering) ของนักศึกษาส่วนใหญ่ในระบบ ผลลัพธ์อาจไม่ได้ตรงกับบุคลิกหรือสภาพจิตใจของทุกคนแบบ 100% โปรดใช้เป็นแนวทางในการสำรวจตัวเองเบื้องต้นเท่านั้น
+          </p>
+        `;
+
+        // สรุปข้อมูลให้ผู้ใช้ดู (Reflection)
+        const summaryHtml = `
+        <li><b>การนอน:</b> ${payload.sleep}</li>
+        <li><b>การเงิน:</b> ${payload.income}</li>
+        <li><b>ความสัมพันธ์:</b> ${payload.relation}</li>
+        <li><b>ความรู้สึกเบื่อ/หมดไฟ:</b> ${payload.st_bored}</li>
+      `;
+        $("summaryList").innerHTML = summaryHtml;
+
+        // เปลี่ยนไปหน้าผลลัพธ์
+        nextStep(4);
+
+      } catch (err) {
+        alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: " + err);
+        btn.textContent = "ลองใหม่อีกครั้ง";
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>
